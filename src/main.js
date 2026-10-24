@@ -13,6 +13,7 @@ const previewWrap = $('previewWrap');
 const pdfPreview = $('pdfPreview');
 const previewName = $('previewName');
 const downloadButton = $('downloadButton');
+const openPdfButton = $('openPdfButton');
 const printButton = $('printButton');
 const savedList = $('savedList');
 const clearAllSavedButton = $('clearAllSaved');
@@ -92,7 +93,7 @@ function renderSelectedFiles() {
   clearButton.disabled = selectedFiles.length === 0;
   processButton.disabled = $('jobMode').value === 'files' && selectedFiles.length === 0;
   if (!selectedFiles.length) {
-    fileList.innerHTML = `<div class="empty-state"><div class="empty-icon">▤</div><strong>No files selected</strong><span>Your selected files and generated PDFs will appear here.</span></div>`;
+    fileList.innerHTML = `<div class="empty-state"><div class="empty-icon">□</div><strong>No files selected</strong><span>Your selected files and generated PDFs will appear here.</span></div>`;
     return;
   }
   fileList.innerHTML = selectedFiles.map((file, index) => {
@@ -129,7 +130,7 @@ function addFiles(fileListLike) {
   renderSelectedFiles();
   if (unsupported.length) setStatus(`${unsupported.length} unsupported file(s) skipped. Add PDF, JPG, PNG, or DOCX.`, 'warning');
   else if (supported.some(file => fileType(file) === 'docx')) setStatus('DOCX files are listed, but must first be converted locally to PDF in this version.', 'warning');
-  else if (supported.length) setStatus(`${supported.length} file(s) added. Select “Add center dots” when ready.`);
+  else if (supported.length) setStatus(`${supported.length} file(s) added. Select “Add center dots” when ready.`);
 }
 
 fileInput.addEventListener('change', (event) => {
@@ -254,14 +255,14 @@ async function processSelectedFiles() {
   }
   if ($('jobMode').value === 'blank') {
     processButton.disabled = true;
-    processButton.innerHTML = '<span class="spinner"></span> Creating…';
+    processButton.innerHTML = '<span class="spinner"></span> Creating”¦';
     try {
       await processBlankPages(dotMm);
     } catch (error) {
       setStatus(error?.message || 'Could not create blank PDF.', 'error');
     } finally {
       processButton.disabled = false;
-      processButton.innerHTML = '<span>＋</span> Create PDF with center dots';
+      processButton.innerHTML = '<span>ï¼‹</span> Create PDF with center dots';
     }
     return;
   }
@@ -273,7 +274,7 @@ async function processSelectedFiles() {
   }
 
   processButton.disabled = true;
-  processButton.innerHTML = '<span class="spinner"></span> Processing…';
+  processButton.innerHTML = '<span class="spinner"></span> Processing”¦';
   let completed = 0;
   let failures = [];
   for (const file of work) {
@@ -297,7 +298,7 @@ async function processSelectedFiles() {
   }
   await renderSavedOutputs();
   processButton.disabled = selectedFiles.length === 0;
-  processButton.innerHTML = '<span>＋</span> Add center dots';
+  processButton.innerHTML = '<span>ï¼‹</span> Add center dots';
   if (failures.length) setStatus(`${completed} file(s) processed; ${failures.length} failed. ${failures.join(' | ')}`, 'warning');
   else setStatus(`${completed} file(s) processed successfully.${docxCount ? ` ${docxCount} DOCX file(s) were skipped; convert them locally to PDF first.` : ''}`, 'success');
 }
@@ -309,7 +310,7 @@ $('jobMode').addEventListener('change', () => {
   $('blankSettings').hidden = !blankMode;
   dropzone.parentElement.querySelector('.dropzone').style.opacity = blankMode ? '.55' : '1';
   processButton.disabled = !blankMode && selectedFiles.length === 0;
-  processButton.innerHTML = blankMode ? '<span>＋</span> Create blank PDF' : '<span>＋</span> Add center dots';
+  processButton.innerHTML = blankMode ? '<span>ï¼‹</span> Create blank PDF' : '<span>ï¼‹</span> Add center dots';
 });
 $('paperSize').addEventListener('change', () => {
   $('customDimensions').hidden = $('paperSize').value !== 'Custom';
@@ -322,6 +323,7 @@ function blobFor(record) {
 
 function showPreview(record) {
   if (latestObjectUrl) URL.revokeObjectURL(latestObjectUrl);
+
   latestObjectUrl = URL.createObjectURL(blobFor(record));
   pdfPreview.src = latestObjectUrl;
   previewName.textContent = record.name;
@@ -332,37 +334,104 @@ function showPreview(record) {
 }
 
 downloadButton.addEventListener('click', () => {
-  if (!latestOutput) return;
+  if (!latestOutput) {
+    setStatus('Please process a file first.', 'warning');
+    return;
+  }
+
   const url = URL.createObjectURL(blobFor(latestOutput));
   const anchor = document.createElement('a');
   anchor.href = url;
   anchor.download = latestOutput.name;
+  document.body.appendChild(anchor);
   anchor.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  anchor.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+});
+
+openPdfButton.addEventListener('click', () => {
+  if (!latestOutput) {
+    setStatus('Please process a file first.', 'warning');
+    return;
+  }
+
+  const url = URL.createObjectURL(blobFor(latestOutput));
+  const openedWindow = window.open(url, '_blank');
+
+  if (!openedWindow) {
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = latestOutput.name;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
+    setStatus(
+      'The browser blocked the PDF tab. Open the downloaded PDF from Downloads to print.',
+      'warning'
+    );
+  } else {
+    setStatus(
+      'PDF opened. Use your PDF viewer to print it.',
+      'success'
+    );
+  }
+
+  setTimeout(() => URL.revokeObjectURL(url), 300000);
 });
 
 printButton.addEventListener('click', () => {
-  if (!latestOutput) return;
+  if (!latestOutput) {
+    setStatus('Please process a file first.', 'warning');
+    return;
+  }
 
-  // Mobile browsers may not support printing an embedded PDF.
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(
+    navigator.userAgent
+  );
 
   if (isMobile) {
     const url = URL.createObjectURL(blobFor(latestOutput));
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener';
-    link.click();
+    const openedWindow = window.open(url, '_blank');
 
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    if (!openedWindow) {
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = latestOutput.name;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+
+      setStatus(
+        'PDF downloaded. Open it from Downloads and choose Print.',
+        'warning'
+      );
+    } else {
+      setStatus(
+        'PDF opened. Choose Print in your PDF viewer.',
+        'success'
+      );
+    }
+
+    setTimeout(() => URL.revokeObjectURL(url), 300000);
     return;
   }
 
   if (!latestObjectUrl) return;
-  pdfPreview.contentWindow?.focus();
-  pdfPreview.contentWindow?.print();
+
+  try {
+    pdfPreview.contentWindow?.focus();
+    pdfPreview.contentWindow?.print();
+  } catch (error) {
+    console.error('Print failed:', error);
+    setStatus(
+      'Download the PDF and print the saved file.',
+      'warning'
+    );
+  }
 });
+
 
 async function renderSavedOutputs() {
   try {
@@ -443,3 +512,4 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
 }
 
 renderSavedOutputs();
+
