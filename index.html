@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#172033" />
+  <meta name="description" content="Add a precise center dot to PDF documents and images locally." />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <title>Dot Printer</title>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">•</div>
+      <div>
+        <h1>Dot Printer</h1>
+        <p>Precise page marks. Files stay on your device.</p>
+      </div>
+      <span class="privacy"><span class="privacy-dot"></span> Local processing</span>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">PRINTING TOOL</p>
+          <h2>Put the dot in the right place.</h2>
+          <p class="intro-copy">Add a 2 mm black dot to the exact geometric center of every page, then preview, save, or print the finished PDF.</p>
+        </div>
+        <div class="paper-art" aria-hidden="true">
+          <div class="paper-sheet"><span></span></div>
+          <small>2 mm</small>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="panel upload-panel">
+          <div class="section-heading">
+            <div><span class="step">01</span><h3>Select files</h3></div>
+            <span class="muted">PDF, JPG, PNG</span>
+          </div>
+          <label class="dropzone" id="dropzone" for="fileInput">
+            <span class="upload-icon">↑</span>
+            <strong>Choose files or drop them here</strong>
+            <span>Multiple files are supported. PDF pages keep their original size.</span>
+            <span class="file-types">PDF · JPG · PNG · DOCX* </span>
+          </label>
+          <input id="fileInput" type="file" accept=".pdf,.jpg,.jpeg,.png,.docx,application/pdf,image/jpeg,image/png,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden />
+          <p class="hint">* DOCX conversion is not enabled in this browser-only version. Convert Word files to PDF locally with LibreOffice, then add the PDF here. Your documents are never uploaded.</p>
+
+          <div id="settingsControls" hidden>
+          <div class="section-heading settings-heading">
+            <div><span class="step">02</span><h3>Settings</h3></div>
+          </div>
+          <label class="field-label">What do you want to create?
+            <select id="jobMode" class="select-input">
+              <option value="files">Add dots to selected files</option>
+              <option value="blank">Create a blank page with a center dot</option>
+            </select>
+          </label>
+          <div id="blankSettings" class="blank-settings" hidden>
+            <div class="settings-grid">
+              <label>Paper size
+                <select id="paperSize" class="select-input">
+                  <option value="A4">A4 (210 × 297 mm)</option>
+                  <option value="A3">A3 (297 × 420 mm)</option>
+                  <option value="A5">A5 (148 × 210 mm)</option>
+                  <option value="Legal">Legal (215.9 × 355.6 mm)</option>
+                  <option value="Letter">Letter (215.9 × 279.4 mm)</option>
+                  <option value="Custom">Custom size</option>
+                </select>
+              </label>
+              <label>Orientation
+                <select id="orientation" class="select-input">
+                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </label>
+            </div>
+            <div id="customDimensions" class="settings-grid" hidden>
+              <label>Width
+                <div class="input-suffix"><input id="customWidth" type="number" min="10" max="2000" value="210" /><span>mm</span></div>
+              </label>
+              <label>Height
+                <div class="input-suffix"><input id="customHeight" type="number" min="10" max="2000" value="297" /><span>mm</span></div>
+              </label>
+            </div>
+            <label class="field-label">Number of pages
+              <input id="blankPages" class="plain-input" type="number" min="1" max="500" value="1" />
+            </label>
+          </div>
+          <div class="settings-grid">
+            <label>Dot diameter
+              <div class="input-suffix"><input id="dotSize" type="number" min="1" max="10" step="0.5" value="3" /><span>mm</span></div>
+            </label>
+            <label>Image DPI
+              <div class="input-suffix"><input id="imageDpi" type="number" min="72" max="1200" step="1" value="300" /><span>DPI</span></div>
+            </label>
+          </div>
+          <p class="hint">Images become one PDF page each. Physical size is estimated from pixel dimensions using the selected DPI. Existing PDF page sizes are preserved.</p>
+          </div>
+          <button class="primary-button" id="processButton" disabled><span>＋</span> Create PDF with center dots</button>
+          <p id="status" class="status" role="status" aria-live="polite">Select one or more PDF or image files to begin.</p>
+        </div>
+
+        <div class="panel queue-panel">
+          <div class="section-heading">
+            <div><span class="step">03</span><h3>Files & output</h3></div>
+            <button class="text-button" id="clearButton" disabled>Clear list</button>
+          </div>
+          <div id="fileList" class="file-list">
+            <div class="empty-state">
+              <div class="empty-icon">▤</div>
+              <strong>No files selected</strong>
+              <span>Your selected files and generated PDFs will appear here.</span>
+            </div>
+          </div>
+          <div class="saved-heading">
+            <div><h3>Saved PDFs</h3><p>Stored in this browser on this device.</p></div>
+            <div class="saved-heading-actions">
+              <button class="text-button" id="refreshSaved">Refresh</button>
+              <button class="text-button danger-button" id="clearAllSaved" disabled>Clear all</button>
+            </div>
+          </div>
+          <div id="savedList" class="saved-list">
+            <p class="hint">Loading saved files…</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel preview-panel">
+        <div class="section-heading">
+          <div><span class="step">04</span><h3>Preview & print</h3></div>
+          <span class="muted">Print at Actual size / 100%</span>
+        </div>
+        <div id="previewEmpty" class="preview-empty">
+          <div class="preview-paper"><span></span></div>
+          <div><strong>Your preview will appear here</strong><p>Process a file to inspect the output before printing.</p></div>
+        </div>
+        <div id="previewWrap" class="preview-wrap" hidden>
+          <iframe id="pdfPreview" title="Generated PDF preview"></iframe>
+          <div class="preview-actions">
+            <span id="previewName" class="preview-name"></span>
+            <button id="downloadButton" class="secondary-button">Download PDF</button>
+            <button id="printButton" class="primary-button small-button">Print</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-note">
+        <span class="lock-icon">▣</span>
+        <div><strong>Your files stay private</strong><p>PDF and image processing happens in your browser. Saved PDFs remain in this browser's local storage until you delete them. Browser data can still be cleared by device settings, so download important files as a backup.</p></div>
+      </section>
+    </main>
+    <footer>Dot Printer · Free local-first utility · Version 0.1</footer>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

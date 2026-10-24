@@ -1,0 +1,18 @@
+{
+  "name": "Dot Printer",
+  "short_name": "Dot Printer",
+  "description": "Add a small dot to PDF documents and images locally.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f3f5f9",
+  "theme_color": "#172033",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
