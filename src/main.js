@@ -342,6 +342,23 @@ downloadButton.addEventListener('click', () => {
 });
 
 printButton.addEventListener('click', () => {
+  if (!latestOutput) return;
+
+  // Mobile browsers may not support printing an embedded PDF.
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    const url = URL.createObjectURL(blobFor(latestOutput));
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.click();
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    return;
+  }
+
   if (!latestObjectUrl) return;
   pdfPreview.contentWindow?.focus();
   pdfPreview.contentWindow?.print();
