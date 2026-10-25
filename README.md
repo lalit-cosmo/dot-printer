@@ -1,6 +1,6 @@
 # Dot Printer
 
-**Dot Printer** is a lightweight Windows desktop application that adds a small dot to the left edge of a page to help identify a folding, punching, or binding reference point when printing documents.
+**Dot Printer** is a lightweight Windows desktop application that adds a small dot to the midpoint of the left edge of a page, helping you find a reference point for folding, punching, or binding printed documents.
 
 ## Features
 
@@ -8,21 +8,23 @@
 - Set the dot diameter to 3 mm.
 - Process PDF files locally.
 - Preview and prepare documents for printing.
-- Designed to work offline after installation, subject to the app's local dependencies and functionality.
+- Designed to work offline after installation, subject to the features and dependencies used.
 - Windows desktop application built with Electron and Vite.
 
 ## Download
 
-Download the Windows installer from the project's [GitHub Releases](https://github.com/lalit-cosmo/dot-printer/releases) page when a release is available.
+Download the latest Windows installer from [Dot Printer GitHub Releases](https://github.com/lalit-cosmo/dot-printer/releases/latest).
 
-## Install
+## Install on Windows
 
-1. Download `Dot Printer Setup 0.1.0.exe` from Releases.
-2. Run the installer.
-3. Follow the installation instructions.
+1. Open the [latest release](https://github.com/lalit-cosmo/dot-printer/releases/latest).
+2. Under **Assets**, download `Dot Printer Setup 0.1.1.exe`.
+3. Run the installer and follow the setup instructions.
 4. Open Dot Printer from the Start menu or desktop shortcut, if created.
 
-**Windows security note:** The installer may display a warning because it is not signed with a recognized code-signing certificate.
+### Windows security notice
+
+This installer is currently unsigned. Windows Smart App Control or other Windows security features may block it. Do not disable Windows security to install it. A future release may use an appropriate trusted signing or Microsoft Store distribution route.
 
 ## Run from source
 
@@ -65,7 +67,7 @@ The generated installer is placed in the `release` directory.
 
 ## Privacy
 
-Document processing is intended to happen locally on your computer. Avoid processing sensitive documents until you have verified the behavior of the specific features you use.
+Document processing is intended to happen locally on your computer. Verify the behavior of the features you use before processing sensitive documents.
 
 ## Project status
 
@@ -73,4 +75,4 @@ Dot Printer is under active development. Features and supported document formats
 
 ## License
 
-No open-source license has been specified yet. All rights are reserved unless a license is added to this repository.
+No open-source license has been specified yet. All rights reserved unless a license is added to this repository.
