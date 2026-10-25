@@ -28,7 +28,7 @@ Download the latest Windows installer from [Dot Printer GitHub Releases](https:/
 ## Install on Windows
 
 1. Open the [latest release](https://github.com/lalit-cosmo/dot-printer/releases/latest).
-2. Under **Assets**, download `Dot Printer Setup 0.1.1.exe`.
+2. Under **Assets**, download `Dot.Printer.Setup.0.1.1.exe`.
 3. Run the installer and follow the setup instructions.
 4. Open Dot Printer from the Start menu or desktop shortcut, if created.
 
