@@ -262,7 +262,7 @@ async function processSelectedFiles() {
       setStatus(error?.message || 'Could not create blank PDF.', 'error');
     } finally {
       processButton.disabled = false;
-      processButton.innerHTML = '<span>ï¼‹</span> Create PDF with center dots';
+      processButton.innerHTML = '<span>+</span> Create PDF with center dots';
     }
     return;
   }
@@ -298,7 +298,7 @@ async function processSelectedFiles() {
   }
   await renderSavedOutputs();
   processButton.disabled = selectedFiles.length === 0;
-  processButton.innerHTML = '<span>ï¼‹</span> Add center dots';
+  processButton.innerHTML = '<span>+</span> Add center dots';
   if (failures.length) setStatus(`${completed} file(s) processed; ${failures.length} failed. ${failures.join(' | ')}`, 'warning');
   else setStatus(`${completed} file(s) processed successfully.${docxCount ? ` ${docxCount} DOCX file(s) were skipped; convert them locally to PDF first.` : ''}`, 'success');
 }
@@ -310,7 +310,7 @@ $('jobMode').addEventListener('change', () => {
   $('blankSettings').hidden = !blankMode;
   dropzone.parentElement.querySelector('.dropzone').style.opacity = blankMode ? '.55' : '1';
   processButton.disabled = !blankMode && selectedFiles.length === 0;
-  processButton.innerHTML = blankMode ? '<span>ï¼‹</span> Create blank PDF' : '<span>ï¼‹</span> Add center dots';
+  processButton.innerHTML = blankMode ? '<span>+</span> Create blank PDF' : '<span>+</span> Add center dots';
 });
 $('paperSize').addEventListener('change', () => {
   $('customDimensions').hidden = $('paperSize').value !== 'Custom';

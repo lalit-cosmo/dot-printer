@@ -6,12 +6,39 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "dev:electron": "electron .",
+    "dist": " npm run build && electron-builder --win"
   },
   "dependencies": {
     "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0",
     "vite": "^6.4.1"
+  },
+  "main": "electron-main.cjs",
+  "build": {
+    "appId": "com.dslalit2589.dotprinter",
+    "productName": "Dot Printer",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron-main.cjs",
+      "dot-printer.ico"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "dot-printer.ico"
+    },
+    "nsis": {
+      "oneClick": "false",
+      "allowToChangeInstallationDirectory": "true"
+    }
   }
 }
