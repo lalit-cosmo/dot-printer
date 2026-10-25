@@ -1,66 +1,76 @@
-# Dot Printer — v0.1
+# Dot Printer
 
-A local-first PWA starter for Windows and Android. It processes PDF files and JPG/PNG images in the browser, adds a 2 mm black dot at the geometric center of every page, and stores generated PDFs in browser IndexedDB until deleted.
+**Dot Printer** is a lightweight Windows desktop application that adds a small dot to the left edge of a page to help identify a folding, punching, or binding reference point when printing documents.
 
-## Current capabilities
+## Features
 
-- Add dots to all pages in existing PDFs while preserving page dimensions.
-- Create blank PDFs with a center dot using A4, A3, A5, Legal, Letter, or custom dimensions, in portrait or landscape; create 1–500 pages.
-- Convert JPG/PNG images into PDF pages at a configurable DPI (default 300).
-- Batch process multiple PDFs and images.
-- Preview, download, print, and delete generated PDFs.
-- No accounts or file uploads.
-- PWA manifest and service worker for installability/offline app-shell caching.
+- Add a dot at the midpoint of the left page edge.
+- Set the dot diameter to 3 mm.
+- Process PDF files locally.
+- Preview and prepare documents for printing.
+- Designed to work offline after installation, subject to the app's local dependencies and functionality.
+- Windows desktop application built with Electron and Vite.
 
-## Not yet implemented
+## Download
 
-- Direct DOCX conversion. A browser-only PWA cannot reliably reproduce Word layout by itself. On Windows, convert DOCX to PDF locally with LibreOffice, then import that PDF. For integrated DOCX support, the next step is a local desktop helper (for example, a Tauri desktop app that can call LibreOffice) or a separately engineered Android-compatible local conversion component.
-- A custom per-file paper-size override for existing PDFs. Existing PDF dimensions are preserved by design.
-- Native Windows `.exe` / Android `.apk` packages.
-- Reliable permanent file storage outside browser storage. Download important outputs as a backup; browser storage may be cleared by device settings.
+Download the Windows installer from the project's [GitHub Releases](https://github.com/lalit-cosmo/dot-printer/releases) page when a release is available.
 
-## Requirements
+## Install
 
-- Node.js 20+ recommended
-- npm
-- Windows, macOS, or Linux for development
+1. Download `Dot Printer Setup 0.1.0.exe` from Releases.
+2. Run the installer.
+3. Follow the installation instructions.
+4. Open Dot Printer from the Start menu or desktop shortcut, if created.
 
-## Run locally
+**Windows security note:** The installer may display a warning because it is not signed with a recognized code-signing certificate.
 
-1. Extract the project folder.
-2. Open PowerShell or a VS Code terminal in that folder.
-3. Install dependencies:
+## Run from source
 
-   ```powershell
-   npm install
-   ```
+### Requirements
 
-4. Start the development server:
+- Node.js and npm
+- Git
 
-   ```powershell
-   npm run dev
-   ```
-
-5. Open the local URL printed by Vite, usually `http://localhost:5173`.
-
-To make a production build:
+### Setup
 
 ```powershell
-npm run build
-npm run preview
+git clone https://github.com/lalit-cosmo/dot-printer.git
+cd dot-printer
+npm install
 ```
 
-## Android testing
+### Start the development version
 
-For testing from an Android phone on the same Wi-Fi, use the network URL shown by Vite, if Windows Firewall permits it. For PWA installation, deploy the built app to an HTTPS static host. `localhost` is only the laptop itself when opened on the phone.
+Open two terminal windows in the project directory.
 
-## Printing notes
+Terminal 1:
 
-- Use **Actual size** or **100%** in the print dialog.
-- Disable **Fit to page** if exact physical measurements matter.
-- Printer mechanics can still cause small physical alignment errors.
-- PDF coordinates use points (72 points per inch); 2 mm is approximately 5.6693 PDF points in diameter.
+```powershell
+npm run dev
+```
 
-## Privacy notes
+Terminal 2:
 
-The app processes selected files in the browser and stores generated PDF bytes in IndexedDB. It does not intentionally send selected documents to a server. Avoid running the app from an untrusted build or hosting it from a site you do not control.
+```powershell
+npm run dev:electron
+```
+
+### Build the Windows installer
+
+```powershell
+npm run dist
+```
+
+The generated installer is placed in the `release` directory.
+
+## Privacy
+
+Document processing is intended to happen locally on your computer. Avoid processing sensitive documents until you have verified the behavior of the specific features you use.
+
+## Project status
+
+Dot Printer is under active development. Features and supported document formats may change between versions.
+
+## License
+
+No open-source license has been specified yet. All rights are reserved unless a license is added to this repository.
