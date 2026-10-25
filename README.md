@@ -11,6 +11,16 @@
 - Designed to work offline after installation, subject to the features and dependencies used.
 - Windows desktop application built with Electron and Vite.
 
+## Screenshots
+
+### Main application
+
+![Dot Printer main application](screenshots/app-main.png)
+
+### Preview and print
+
+![Dot Printer preview and print screen](screenshots/dot-preview.png)
+
 ## Download
 
 Download the latest Windows installer from [Dot Printer GitHub Releases](https://github.com/lalit-cosmo/dot-printer/releases/latest).
